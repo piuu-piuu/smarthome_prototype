@@ -68,14 +68,13 @@ impl SmartHouse<'_> {
     fn create_report<T: DeviceInfoProvider>(&self, provider: &T) -> String {
         // todo!("перебор комнат и устройств в них для составления отчёта")
         for (room, devicelist) in &self.rooms {
-            println!("\n {}", *room);
+            // println!("\n {}", *room);
             for device in *devicelist {
-                print!("{}, ", device)
+                // print!("{}, ", device)
+                provider.info(room, device)
             }
         }
-
-        // provider.info(&self, room_name, device_name)
-        String::from("!")
+        String::from("End of report.")
     }
 }
 
@@ -88,9 +87,11 @@ trait DeviceInfoProvider {
 
 // Пользовательские устройства:
 struct SmartSocket<'a> {
+    name: &'a str,
     info: &'a str,
 }
 struct SmartThermometer<'a> {
+    name: &'a str,
     info: &'a str,
 }
 
@@ -108,26 +109,35 @@ struct BorrowingDeviceInfoProvider<'a, 'b> {
 
 impl DeviceInfoProvider for OwningDeviceInfoProvider<'_> {
     fn info(&self, room_name: &str, device_name: &str) {
-        todo!("8")
+        if device_name == self.socket.name {
+            println!("{} - {} - {}", room_name, device_name, self.socket.info)
+        }
     }
 }
 
 impl DeviceInfoProvider for BorrowingDeviceInfoProvider<'_, '_> {
     fn info(&self, room_name: &str, device_name: &str) {
-        todo!("8")
+        if device_name == self.socket.name {
+            println!("{} - {} - {}", room_name, device_name, self.socket.info)
+        } else if device_name == self.thermo.name {
+            println!("{} - {} - {}", room_name, device_name, self.thermo.info)
+        }
     }
 }
 
 fn main() {
     // Инициализация устройств
     let socket1 = SmartSocket {
-        info: "SmartSocket #1",
+        name: "socket1",
+        info: "SmartSocket",
     };
     let socket2 = SmartSocket {
-        info: "SmartSocket #2",
+        name: "socket2",
+        info: "SmartSocket",
     };
     let thermo = SmartThermometer {
-        info: "SmartThermometer #1",
+        name: "thermo",
+        info: "SmartThermometer",
     };
 
     // Инициализация дома
