@@ -28,6 +28,8 @@ const DEVICE_COUNT: usize = 5;
 
 const ROOMS_COUNT: usize = 3;
 
+const EMPTY_ENTRY: &str = "";
+
 struct SmartHouse<'a> {
     rooms: HashMap<&'a str, [&'a str; DEVICE_COUNT]>,
 }
@@ -36,37 +38,70 @@ impl SmartHouse<'_> {
     fn new() -> Self {
         SmartHouse {
             rooms: HashMap::from([
-                ("bedroom", ["socket", "socket1", "", "", ""]),
-                ("kitchen", ["socket1", "socket2", "thermo", "", ""]),
-                ("living_room", ["thermo", "socket3", "thermo1", "", ""]),
+                (
+                    "bedroom",
+                    ["socket1", "socket2", EMPTY_ENTRY, EMPTY_ENTRY, EMPTY_ENTRY],
+                ),
+                (
+                    "kitchen",
+                    ["socket1", "thermo", "thermo", EMPTY_ENTRY, EMPTY_ENTRY],
+                ),
+                (
+                    "living_room",
+                    ["thermo", "socket2", EMPTY_ENTRY, EMPTY_ENTRY, EMPTY_ENTRY],
+                ),
             ]),
         }
     }
 
+    #[allow(dead_code)]
     fn get_rooms(&self) -> [&str; ROOMS_COUNT] {
         // Размер возвращаемого массива можно выбрать самостоятельно
-        let i = 0;
-        let mut result = ["", "", ""];
+        println!("Rooms and Devices\n");
+        let mut i = 0;
+        let mut result = [EMPTY_ENTRY; ROOMS_COUNT];
         for (key, _value) in &self.rooms {
             result[i] = key;
+            i += 1;
+            // self.devices(key);
         }
         result
     }
 
-    fn devices(&self, room: &str) -> [&str; DEVICE_COUNT] {
+    fn print_rooms_with_devices(&self) {
         // Размер возвращаемого массива можно выбрать самостоятельно
-        let mut result = ["", "", "", "", ""];
+        println!("Rooms and Devices\n");
+        for (key, value) in &self.rooms {
+            print!("{}: ", key);
+            for item in value {
+                print!("{} ", item);
+            }
+        }
+        println!("\n");
+    }
+
+    #[allow(dead_code)]
+    fn devices_at_room(&self, room: &str) -> [&str; DEVICE_COUNT] {
+        // Размер возвращаемого массива можно выбрать самостоятельно
+        let mut result = [
+            EMPTY_ENTRY,
+            EMPTY_ENTRY,
+            EMPTY_ENTRY,
+            EMPTY_ENTRY,
+            EMPTY_ENTRY,
+        ];
         for (key, value) in &self.rooms {
             if *key == room {
                 result = *value;
             }
         }
+
         result
     }
 
     fn create_report<T: DeviceInfoProvider>(&self, provider: &T) -> String {
         // todo!("перебор комнат и устройств в них для составления отчёта")
-        let mut report = "".to_owned();
+        let mut report = EMPTY_ENTRY.to_owned();
         for (room, devicelist) in &self.rooms {
             // println!("\n {}", *room);
             for device in *devicelist {
@@ -109,14 +144,22 @@ struct BorrowingDeviceInfoProvider<'a, 'b> {
 
 impl DeviceInfoProvider for OwningDeviceInfoProvider<'_> {
     fn info(&self, room_name: &str, device_name: &str) -> String {
-        let mut output = "".to_owned();
-        if device_name == self.socket.name {
-            output.push_str(room_name);
-            output.push_str(" - ");
-            output.push_str(device_name);
-            output.push_str(" - ");
-            output.push_str(self.socket.info);
-            output.push_str("\n");
+        let mut output = EMPTY_ENTRY.to_owned();
+        if !device_name.is_empty() {
+            if device_name == self.socket.name {
+                output.push_str(room_name);
+                output.push_str(" - ");
+                output.push_str(device_name);
+                output.push_str(" - ");
+                output.push_str(self.socket.info);
+                output.push_str("\n");
+            } else {
+                output = "Error ".to_string();
+                output.push_str(device_name);
+                output.push_str(" at ");
+                output.push_str(room_name);
+                output.push_str("\n");
+            }
         }
         output
     }
@@ -124,21 +167,29 @@ impl DeviceInfoProvider for OwningDeviceInfoProvider<'_> {
 
 impl DeviceInfoProvider for BorrowingDeviceInfoProvider<'_, '_> {
     fn info(&self, room_name: &str, device_name: &str) -> String {
-        let mut output = "".to_owned();
-        if device_name == self.socket.name {
-            output.push_str(room_name);
-            output.push_str(" - ");
-            output.push_str(device_name);
-            output.push_str(" - ");
-            output.push_str(self.socket.info);
-            output.push_str("\n");
-        } else if device_name == self.thermo.name {
-            if device_name == self.thermo.name {
+        let mut output = EMPTY_ENTRY.to_owned();
+        if !device_name.is_empty() {
+            if device_name == self.socket.name {
                 output.push_str(room_name);
                 output.push_str(" - ");
                 output.push_str(device_name);
                 output.push_str(" - ");
-                output.push_str(self.thermo.info);
+                output.push_str(self.socket.info);
+                output.push_str("\n");
+            } else if device_name == self.thermo.name {
+                if device_name == self.thermo.name {
+                    output.push_str(room_name);
+                    output.push_str(" - ");
+                    output.push_str(device_name);
+                    output.push_str(" - ");
+                    output.push_str(self.thermo.info);
+                    output.push_str("\n");
+                }
+            } else {
+                output = "Error ".to_string();
+                output.push_str(device_name);
+                output.push_str(" at ");
+                output.push_str(room_name);
                 output.push_str("\n");
             }
         }
@@ -177,10 +228,8 @@ fn main() {
     // todo: после добавления обобщённого аргумента в метод, расскоментировать передачу параметра
     let report2 = house.create_report(&info_provider_2);
 
+    house.print_rooms_with_devices();
     // Выводим отчёты на экран:
     println!("Report #1:\n{report1}");
     println!("Report #2:\n{report2}");
-
-    println!("{:?}", house.get_rooms());
-    println!("{:?}", house.devices("bedroom"));
 }
