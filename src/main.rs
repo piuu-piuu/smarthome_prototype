@@ -26,7 +26,7 @@ use std::collections::HashMap;
 
 const DEVICE_COUNT: usize = 5;
 
-const ROOMS_COUNT: usize = 3;
+// const ROOMS_COUNT: usize = 3;
 
 const EMPTY_ENTRY: &str = "";
 
@@ -55,17 +55,10 @@ impl SmartHouse<'_> {
     }
 
     #[allow(dead_code)]
-    fn get_rooms(&self) -> [&str; ROOMS_COUNT] {
+
+    fn get_rooms(&self) -> impl Iterator<Item = &&str> {
         // Размер возвращаемого массива можно выбрать самостоятельно
-        println!("Rooms and Devices\n");
-        let mut i = 0;
-        let mut result = [EMPTY_ENTRY; ROOMS_COUNT];
-        for (key, _value) in &self.rooms {
-            result[i] = key;
-            i += 1;
-            // self.devices(key);
-        }
-        result
+        self.rooms.keys()
     }
 
     fn print_rooms_with_devices(&self) {
@@ -95,7 +88,6 @@ impl SmartHouse<'_> {
                 result = *value;
             }
         }
-
         result
     }
 
