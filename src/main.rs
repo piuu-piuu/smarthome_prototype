@@ -1,32 +1,35 @@
-// Метка todo - реализовать самостоятельно
+// Домашнее задание : делим и тестируем прототип "умного дома"
 
-// ***** Пример библиотеки "Умный дом" со статическим содержимым
-
+// Разделить логически целостные элементы библиотеки ""умный дом"" на отдельные файлы.
+// Покрыть тестами требования к библиотеке.
+// Создать example использования библиотеки.
+// ------------------------------------------------------------------------------------------------------------
 // Библиотека предоставляет структуру дома в комнатах которого расположены устройства.
-
 // Дом имеет название и содержит несколько помещений.
 // Библиотека позволяет запросить список помещений в доме.
 // Помещение имеет уникальное название и содержит названия нескольких устройств.
 // Устройство имеет уникальное в рамках помещения имя.
 // Библиотека позволяет получать список устройств в помещении.
 // Библиотека имеет функцию, возвращающую текстовый отчёт о состоянии дома.
-// Эта функция принимает в качестве аргумента обобщённый тип,
-// позволяющий получить текстовую информацию о состоянии устройства, для включения в отчёт.
-// Эта информация должна предоставляться для каждого устройства на основе данных о положении устройства в доме: имени комнаты и имени устройства.
+// Эта функция принимает в качестве аргумента обобщённый тип, позволяющий получить
+// текстовую информацию о состоянии устройства, для включения в отчёт.
+// Эта информация должна предоставляться для каждого устройства на основе данных
+// о положении устройства в доме: имени комнаты и имени устройства.
 // Если устройство не найдено в источнике информации, то вместо текста о состоянии вернуть сообщение об ошибке.
-// Привести пример типа, предоставляющего текстовую информацию об устройствах в доме для составления отчёта.
-
-// "Принято", если:
-// Утилита cargo clippy не выдаёт предупреждений.
-// Команда cargo fmt --check не выдаёт предупреждений.
-// В функции main инициализируется "Умный дом" и источник информации об устройствах.
-// На экран выводится список комнат и устройств в них. На экран выводится отчёт о состоянии дома.
+// Шаблон для описания сущностей библиотеки: https://gist.github.com/76dff7177f19ff7e802b1e121865afe4
+// -------------------------------------------------------------------------------------------------------------
+// Статус "Принято" ставится, если:
+//     Код логически верно разбит на модули.
+//     Утилита cargo clippy не выдаёт предупреждений.
+//     Команда cargo fmt --check --all не выдаёт предупреждений.
+//     Написаны тесты для функционала библиотеки.
+//      В примере инициализируется "Умный дом" и источник информации об устройствах.
+//      На экран выводится список комнат и устройств в них.
+//      На экран выводится отчёт о состоянии дома.
 
 use std::collections::HashMap;
 
 const DEVICE_COUNT: usize = 5;
-
-// const ROOMS_COUNT: usize = 3;
 
 const EMPTY_ENTRY: &str = "";
 
@@ -92,7 +95,7 @@ impl SmartHouse<'_> {
     }
 
     fn create_report<T: DeviceInfoProvider>(&self, provider: &T) -> String {
-        // todo!("перебор комнат и устройств в них для составления отчёта")
+        // перебор комнат и устройств в них для составления отчёта
         let mut report = EMPTY_ENTRY.to_owned();
         for (room, devicelist) in &self.rooms {
             // println!("\n {}", *room);
@@ -106,7 +109,7 @@ impl SmartHouse<'_> {
 }
 
 trait DeviceInfoProvider {
-    // todo: метод, возвращающий состояние устройства по имени комнаты и имени устройства
+    // метод, возвращающий состояние устройства по имени комнаты и имени устройства
     fn info(&self, room_name: &str, device_name: &str) -> String;
 }
 
@@ -123,7 +126,7 @@ struct SmartThermometer<'a> {
 }
 
 // Пользовательские поставщики информации об устройствах.
-// Могут как хранить устройства, так и заимствывать.
+// Могут как хранить устройства, так и заимствовать.
 struct OwningDeviceInfoProvider<'a> {
     socket: SmartSocket<'a>,
 }
@@ -132,25 +135,14 @@ struct BorrowingDeviceInfoProvider<'a, 'b> {
     thermo: &'b SmartThermometer<'b>,
 }
 
-// todo: реализация трейта `DeviceInfoProvider` для поставщиков информации
-
 impl DeviceInfoProvider for OwningDeviceInfoProvider<'_> {
     fn info(&self, room_name: &str, device_name: &str) -> String {
         let mut output = EMPTY_ENTRY.to_owned();
         if !device_name.is_empty() {
             if device_name == self.socket.name {
-                output.push_str(room_name);
-                output.push_str(" - ");
-                output.push_str(device_name);
-                output.push_str(" - ");
-                output.push_str(self.socket.info);
-                output.push_str("\n");
+                output = format!("{} - {} - {}\n", room_name, device_name, self.socket.info);
             } else {
-                output = "Error ".to_string();
-                output.push_str(device_name);
-                output.push_str(" at ");
-                output.push_str(room_name);
-                output.push_str("\n");
+                output = format!("Error {} at {}\n", device_name, room_name);
             }
         }
         output
@@ -162,27 +154,13 @@ impl DeviceInfoProvider for BorrowingDeviceInfoProvider<'_, '_> {
         let mut output = EMPTY_ENTRY.to_owned();
         if !device_name.is_empty() {
             if device_name == self.socket.name {
-                output.push_str(room_name);
-                output.push_str(" - ");
-                output.push_str(device_name);
-                output.push_str(" - ");
-                output.push_str(self.socket.info);
-                output.push_str("\n");
+                output = format!("{} - {} - {}\n", room_name, device_name, self.socket.info);
             } else if device_name == self.thermo.name {
                 if device_name == self.thermo.name {
-                    output.push_str(room_name);
-                    output.push_str(" - ");
-                    output.push_str(device_name);
-                    output.push_str(" - ");
-                    output.push_str(self.thermo.info);
-                    output.push_str("\n");
+                    output = format!("{} - {} - {}\n", room_name, device_name, self.thermo.info);
                 }
             } else {
-                output = "Error ".to_string();
-                output.push_str(device_name);
-                output.push_str(" at ");
-                output.push_str(room_name);
-                output.push_str("\n");
+                output = format!("Error {} at {}\n", device_name, room_name);
             }
         }
         output
@@ -209,7 +187,6 @@ fn main() {
 
     // Строим отчёт с использованием `OwningDeviceInfoProvider`.
     let info_provider_1 = OwningDeviceInfoProvider { socket: socket1 };
-    // todo: после добавления обобщённого аргумента в метод, расскоментировать передачу параметра
     let report1 = house.create_report(&info_provider_1);
 
     // Строим отчёт с использованием `BorrowingDeviceInfoProvider`.
@@ -217,7 +194,7 @@ fn main() {
         socket: &socket2,
         thermo: &thermo,
     };
-    // todo: после добавления обобщённого аргумента в метод, расскоментировать передачу параметра
+
     let report2 = house.create_report(&info_provider_2);
 
     house.print_rooms_with_devices();
