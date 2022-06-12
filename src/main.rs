@@ -33,9 +33,10 @@
 //      Функции, которые могут не выполнить своё назначение, возвращают Option или Result.
 //      Типы ошибок реализуют трейт Error.
 
-pub mod info;
-pub mod smarthouse;
-use info::devices::{SmartSocket, SmartThermometer};
+mod devices;
+mod info;
+mod smarthouse;
+use devices::{SmartSocket, SmartThermometer};
 use info::{BorrowingDeviceInfoProvider, OwningDeviceInfoProvider};
 use smarthouse::SmartHouse;
 // use std::collections::HashMap;

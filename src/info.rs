@@ -1,5 +1,5 @@
-pub mod devices;
-use devices::{SmartSocket, SmartThermometer};
+// pub mod devices;
+use super::devices::{SmartSocket, SmartThermometer};
 
 const EMPTY_ENTRY: &str = "";
 

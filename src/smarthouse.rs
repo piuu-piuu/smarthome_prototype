@@ -1,4 +1,3 @@
-// use super::info::devices::{SmartSocket, SmartThermometer};
 use super::info::DeviceInfoProvider;
 use std::collections::HashMap;
 
