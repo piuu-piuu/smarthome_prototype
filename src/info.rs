@@ -1,16 +1,11 @@
-// pub mod devices;
 use super::devices::{SmartSocket, SmartThermometer};
 
 const EMPTY_ENTRY: &str = "";
 
 pub trait DeviceInfoProvider {
     // метод, возвращающий состояние устройства по имени комнаты и имени устройства
-    fn info(&self, room_name: &str, device_name: &str) -> String;
+    fn info(&self, room_name: &str, device_name: &str) -> Option<String>;
 }
-
-// ***** Пример использования библиотеки умный дом:
-
-// Пользовательские устройства:
 
 // Пользовательские поставщики информации об устройствах.
 // Могут как хранить устройства, так и заимствовать.
@@ -22,34 +17,43 @@ pub struct BorrowingDeviceInfoProvider<'a, 'b> {
     pub thermo: &'b SmartThermometer<'b>,
 }
 
+#[allow(unused_assignments)]
 impl DeviceInfoProvider for OwningDeviceInfoProvider<'_> {
-    fn info(&self, room_name: &str, device_name: &str) -> String {
+    fn info(&self, room_name: &str, device_name: &str) -> Option<String> {
         let mut output = EMPTY_ENTRY.to_owned();
         if !device_name.is_empty() {
             if device_name == self.socket.name {
-                output = format!("{} - {} - {}\n", room_name, device_name, self.socket.info);
+                output = format!("{} - {} - {}. ", room_name, device_name, self.socket.info);
+                Some(output)
             } else {
-                output = format!("Error {} at {}\n", device_name, room_name);
+                output = format!("Error {} at {}. ", device_name, room_name);
+                None
             }
+        } else {
+            None
         }
-        output
     }
 }
 
+#[allow(unused_assignments)]
 impl DeviceInfoProvider for BorrowingDeviceInfoProvider<'_, '_> {
-    fn info(&self, room_name: &str, device_name: &str) -> String {
+    fn info(&self, room_name: &str, device_name: &str) -> Option<String> {
         let mut output = EMPTY_ENTRY.to_owned();
         if !device_name.is_empty() {
             if device_name == self.socket.name {
-                output = format!("{} - {} - {}\n", room_name, device_name, self.socket.info);
-            } else if device_name == self.thermo.name {
-                if device_name == self.thermo.name {
-                    output = format!("{} - {} - {}\n", room_name, device_name, self.thermo.info);
-                }
+                output = format!("{} - {} - {}. ", room_name, device_name, self.socket.info);
+                Some(output)
             } else {
-                output = format!("Error {} at {}\n", device_name, room_name);
+                if device_name == self.thermo.name {
+                    output = format!("{} - {} - {}. ", room_name, device_name, self.thermo.info);
+                    Some(output)
+                } else {
+                    output = format!("Error {} at {}. ", device_name, room_name);
+                    None
+                }
             }
+        } else {
+            None
         }
-        output
     }
 }

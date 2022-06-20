@@ -1,17 +1,20 @@
 use super::info::DeviceInfoProvider;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 const DEVICE_COUNT: usize = 5;
 const EMPTY_ENTRY: &str = "";
 
-pub struct SmartHouse<'a> {
-    rooms: HashMap<&'a str, [&'a str; DEVICE_COUNT]>,
+#[allow(dead_code)]
+pub struct SmartHouse<'a, 'b> {
+    pub name: &'a str,
+    pub rooms: BTreeMap<&'b str, [&'b str; DEVICE_COUNT]>,
 }
 
-impl SmartHouse<'_> {
+impl SmartHouse<'_, '_> {
     pub fn new() -> Self {
         SmartHouse {
-            rooms: HashMap::from([
+            name: "User House",
+            rooms: BTreeMap::from([
                 (
                     "bedroom",
                     ["socket1", "socket2", EMPTY_ENTRY, EMPTY_ENTRY, EMPTY_ENTRY],
@@ -28,23 +31,20 @@ impl SmartHouse<'_> {
         }
     }
 
-    #[allow(dead_code)]
-
     pub fn get_rooms(&self) -> impl Iterator<Item = &&str> {
         // Размер возвращаемого массива можно выбрать самостоятельно
         self.rooms.keys()
     }
 
     pub fn print_rooms_with_devices(&self) {
-        // Размер возвращаемого массива можно выбрать самостоятельно
-        println!("Rooms and Devices\n");
+        println!("Rooms and Devices: ");
         for (key, value) in &self.rooms {
             print!("{}: ", key);
             for item in value {
                 print!("{} ", item);
             }
         }
-        println!("\n");
+        print!("\n");
     }
 
     #[allow(dead_code)]
@@ -69,12 +69,38 @@ impl SmartHouse<'_> {
         // перебор комнат и устройств в них для составления отчёта
         let mut report = EMPTY_ENTRY.to_owned();
         for (room, devicelist) in &self.rooms {
-            // println!("\n {}", *room);
             for device in *devicelist {
-                // print!("{}, ", device)
-                report.push_str(&provider.info(room, device));
+                match provider.info(room, device) {
+                    Some(output) => report.push_str(&output),
+                    None => (),
+                }
             }
         }
         report
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_rooms() {
+        let house = SmartHouse::new();
+        house.get_rooms().next();
+    }
+    #[test]
+    fn test_device_list() {
+        let house = SmartHouse::new();
+        house.print_rooms_with_devices();
+    }
+    #[test]
+    fn test_devices() {
+        let house = SmartHouse::new();
+        house.devices_at_room("kitchen");
+    }
+    #[test]
+    fn test_house_name() {
+        let house = SmartHouse::new();
+        house.name;
     }
 }
