@@ -1,13 +1,12 @@
 use super::info::DeviceInfoProvider;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 
-const DEVICE_COUNT: usize = 5;
 const EMPTY_ENTRY: &str = "";
 
 #[allow(dead_code)]
 pub struct SmartHouse<'a, 'b> {
     pub name: &'a str,
-    pub rooms: BTreeMap<&'b str, [&'b str; DEVICE_COUNT]>,
+    pub rooms: BTreeMap<&'b str, HashSet<&'b str>>,
 }
 
 impl SmartHouse<'_, '_> {
@@ -15,17 +14,14 @@ impl SmartHouse<'_, '_> {
         SmartHouse {
             name: "User House",
             rooms: BTreeMap::from([
-                (
-                    "bedroom",
-                    ["socket1", "socket2", EMPTY_ENTRY, EMPTY_ENTRY, EMPTY_ENTRY],
-                ),
+                ("bedroom", HashSet::from_iter(vec!["socket1"].into_iter())),
                 (
                     "kitchen",
-                    ["socket1", "thermo", "thermo", EMPTY_ENTRY, EMPTY_ENTRY],
+                    HashSet::from_iter(vec!["socket2", "thermo1"].into_iter()),
                 ),
                 (
-                    "living_room",
-                    ["thermo", "socket2", EMPTY_ENTRY, EMPTY_ENTRY, EMPTY_ENTRY],
+                    "bathroom",
+                    HashSet::from_iter(vec!["socket1", "thermo1"].into_iter()),
                 ),
             ]),
         }
@@ -44,32 +40,32 @@ impl SmartHouse<'_, '_> {
                 print!("{} ", item);
             }
         }
-        print!("\n");
+        println!();
+
+        impl Default for SmartHouse<'_, '_> {
+            fn default() -> Self {
+                Self::new()
+            }
+        }
     }
 
     #[allow(dead_code)]
-    pub fn devices_at_room(&self, room: &str) -> [&str; DEVICE_COUNT] {
+    pub fn devices_at_room(&self, room: &str) -> Vec<&str> {
         // Размер возвращаемого массива можно выбрать самостоятельно
-        let mut result = [
-            EMPTY_ENTRY,
-            EMPTY_ENTRY,
-            EMPTY_ENTRY,
-            EMPTY_ENTRY,
-            EMPTY_ENTRY,
-        ];
+        let mut result = HashSet::new();
         for (key, value) in &self.rooms {
             if *key == room {
-                result = *value;
+                result = value.clone();
             }
         }
-        result
+        Vec::from_iter(result)
     }
 
     pub fn create_report<T: DeviceInfoProvider>(&self, provider: &T) -> String {
         // перебор комнат и устройств в них для составления отчёта
         let mut report = EMPTY_ENTRY.to_owned();
         for (room, devicelist) in &self.rooms {
-            for device in *devicelist {
+            for device in devicelist {
                 match provider.info(room, device) {
                     Some(output) => report.push_str(&output),
                     None => (),
@@ -97,6 +93,8 @@ mod tests {
     fn test_devices() {
         let house = SmartHouse::new();
         house.devices_at_room("kitchen");
+        house.devices_at_room("bathroom");
+        house.devices_at_room("bedroom");
     }
     #[test]
     fn test_house_name() {

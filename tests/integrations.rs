@@ -16,6 +16,7 @@ fn house_has_rooms() {
 #[test]
 fn house_rooms_has_devices() {
     let house = SmartHouse::new();
+
     let socket1 = SmartSocket {
         name: "socket1",
         info: "SmartSocket",
@@ -24,17 +25,18 @@ fn house_rooms_has_devices() {
         name: "socket2",
         info: "SmartSocket",
     };
-    let thermo = SmartThermometer {
-        name: "thermo",
+    let thermo1 = SmartThermometer {
+        name: "thermo1",
         info: "SmartThermometer",
     };
     let info_provider_1 = OwningDeviceInfoProvider { socket: socket1 };
     let _report1 = house.create_report(&info_provider_1);
+
     let info_provider_2 = BorrowingDeviceInfoProvider {
         socket: &socket2,
-        thermo: &thermo,
+        thermo: &thermo1,
     };
     let report2 = house.create_report(&info_provider_2);
 
-    assert_eq!(report2.to_string(), "bedroom - socket2 - SmartSocket. kitchen - thermo - SmartThermometer. kitchen - thermo - SmartThermometer. living_room - thermo - SmartThermometer. living_room - socket2 - SmartSocket. ")
+    assert_eq!(report2.to_string(), "bathroom - thermo1 - SmartThermometer. kitchen - socket2 - SmartSocket. kitchen - thermo1 - SmartThermometer. ")
 }

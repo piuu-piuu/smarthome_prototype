@@ -43,14 +43,12 @@ impl DeviceInfoProvider for BorrowingDeviceInfoProvider<'_, '_> {
             if device_name == self.socket.name {
                 output = format!("{} - {} - {}. ", room_name, device_name, self.socket.info);
                 Some(output)
+            } else if device_name == self.thermo.name {
+                output = format!("{} - {} - {}. ", room_name, device_name, self.thermo.info);
+                Some(output)
             } else {
-                if device_name == self.thermo.name {
-                    output = format!("{} - {} - {}. ", room_name, device_name, self.thermo.info);
-                    Some(output)
-                } else {
-                    output = format!("Error {} at {}. ", device_name, room_name);
-                    None
-                }
+                output = format!("Error {} at {}. ", device_name, room_name);
+                None
             }
         } else {
             None
