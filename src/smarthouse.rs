@@ -3,7 +3,6 @@ use std::collections::{BTreeMap, HashSet};
 
 const EMPTY_ENTRY: &str = "";
 
-#[allow(dead_code)]
 pub struct SmartHouse<'a, 'b> {
     pub name: &'a str,
     pub rooms: BTreeMap<&'b str, HashSet<&'b str>>,
@@ -49,7 +48,6 @@ impl SmartHouse<'_, '_> {
         }
     }
 
-    #[allow(dead_code)]
     pub fn devices_at_room(&self, room: &str) -> Vec<&str> {
         // Размер возвращаемого массива можно выбрать самостоятельно
         let mut result = HashSet::new();
@@ -99,6 +97,6 @@ mod tests {
     #[test]
     fn test_house_name() {
         let house = SmartHouse::new();
-        house.name;
+        println!("{}", house.name);
     }
 }
