@@ -1,3 +1,5 @@
+use crate::info::NoDeviceFoundError;
+
 use super::info::DeviceInfoProvider;
 use std::collections::{BTreeMap, HashSet};
 
@@ -65,8 +67,10 @@ impl SmartHouse<'_, '_> {
         for (room, devicelist) in &self.rooms {
             for device in devicelist {
                 match provider.info(room, device) {
-                    Some(output) => report.push_str(&output),
-                    None => (),
+                    Ok(output) => report.push_str(&output),
+                    Err(NoDeviceFoundError) => {
+                        println!("{} for {}, {}", NoDeviceFoundError, room, device)
+                    }
                 }
             }
         }
