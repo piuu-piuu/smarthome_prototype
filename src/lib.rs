@@ -26,5 +26,6 @@
 //      Типы ошибок реализуют трейт Error.
 
 pub mod devices;
+pub mod errors;
 pub mod info;
 pub mod smarthouse;

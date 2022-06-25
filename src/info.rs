@@ -1,12 +1,11 @@
-use std::{error::Error, fmt};
-
 use super::devices::{SmartSocket, SmartThermometer};
+use super::errors::SmartHouseError;
 
 const EMPTY_ENTRY: &str = "";
 
 pub trait DeviceInfoProvider {
     // метод, возвращающий состояние устройства по имени комнаты и имени устройства
-    fn info(&self, room_name: &str, device_name: &str) -> Result<String, NoDeviceFoundError>;
+    fn info(&self, room_name: &str, device_name: &str) -> Result<String, SmartHouseError>;
 }
 
 // Пользовательские поставщики информации об устройствах.
@@ -19,38 +18,26 @@ pub struct BorrowingDeviceInfoProvider<'a, 'b> {
     pub thermo: &'b SmartThermometer<'b>,
 }
 
-#[derive(Debug)]
-pub struct NoDeviceFoundError;
-
-impl fmt::Display for NoDeviceFoundError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "No such device in this room!")
-    }
-}
-
-impl Error for NoDeviceFoundError {}
-
 #[allow(unused_assignments)]
 impl DeviceInfoProvider for OwningDeviceInfoProvider<'_> {
-    fn info(&self, room_name: &str, device_name: &str) -> Result<String, NoDeviceFoundError> {
+    fn info(&self, room_name: &str, device_name: &str) -> Result<String, SmartHouseError> {
         let mut output = EMPTY_ENTRY.to_owned();
         if !device_name.is_empty() {
             if device_name == self.socket.name {
                 output = format!("{}: {} {}. ", room_name, device_name, self.socket.info);
                 Ok(output)
             } else {
-                // output = format!("Error {} at {}. ", device_name, room_name);
-                Err(NoDeviceFoundError)
+                Err(SmartHouseError::NoDeviceFound)
             }
         } else {
-            Err(NoDeviceFoundError)
+            Err(SmartHouseError::NoDeviceName)
         }
     }
 }
 
 #[allow(unused_assignments)]
 impl DeviceInfoProvider for BorrowingDeviceInfoProvider<'_, '_> {
-    fn info(&self, room_name: &str, device_name: &str) -> Result<String, NoDeviceFoundError> {
+    fn info(&self, room_name: &str, device_name: &str) -> Result<String, SmartHouseError> {
         let mut output = EMPTY_ENTRY.to_owned();
         if !device_name.is_empty() {
             if device_name == self.socket.name {
@@ -61,10 +48,10 @@ impl DeviceInfoProvider for BorrowingDeviceInfoProvider<'_, '_> {
                 Ok(output)
             } else {
                 // output = format!("Error {} at {}. ", device_name, room_name);
-                Err(NoDeviceFoundError)
+                Err(SmartHouseError::NoDeviceFound)
             }
         } else {
-            Err(NoDeviceFoundError)
+            Err(SmartHouseError::NoDeviceName)
         }
     }
 }

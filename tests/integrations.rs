@@ -38,5 +38,5 @@ fn house_rooms_has_devices() {
     };
     let report2 = house.create_report(&info_provider_2);
 
-    assert_eq!(report2, "bathroom - thermo1 - SmartThermometer. kitchen - socket2 - SmartSocket. kitchen - thermo1 - SmartThermometer. ")
+    assert_eq!(report2, "bathroom: thermo1 SmartThermometer. kitchen: socket2 SmartSocket. kitchen: thermo1 SmartThermometer. ")
 }
