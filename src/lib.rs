@@ -1,6 +1,6 @@
 //
 //! Домашнее задание 6 : добавление комнат в дом и устройств в комнаты:
-//! функции insert_room, insert_device
+//! функции insert_room, insert_device и тесты для них
 //
 
 pub mod devices;
