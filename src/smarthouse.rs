@@ -35,6 +35,12 @@ impl<'a> SmartHouse<'a> {
         }
     }
 
+    pub fn delete_room(&mut self, room_name: &'a str) {
+        if self.rooms.contains_key(room_name) {
+            self.rooms.remove(room_name);
+        }
+    }
+
     pub fn insert_device(&mut self, new_device: &'a str, room_name: &'a str) {
         let device_list_option: Option<&HashSet<&str>> = self.rooms.get(room_name);
         let mut device_list: HashSet<&str>;
@@ -43,6 +49,22 @@ impl<'a> SmartHouse<'a> {
                 device_list = device_list_option.clone();
                 device_list.insert(new_device);
                 self.rooms.insert(room_name, device_list);
+            }
+            None => {
+                println!("No devices' placeholder")
+            }
+        }
+    }
+
+    pub fn delete_device(&mut self, device_name: &'a str, room_name: &'a str) {
+        let device_list_option: Option<&HashSet<&str>> = self.rooms.get(room_name);
+        let mut device_list: HashSet<&str>;
+        match device_list_option {
+            Some(device_list_option) => {
+                device_list = device_list_option.clone();
+                if device_list.contains(device_name) {
+                    device_list.remove(device_name);
+                }
             }
             None => {
                 println!("No devices' placeholder")
@@ -138,9 +160,21 @@ mod tests {
     }
 
     #[test]
+    fn delete_room() {
+        let mut house = SmartHouse::new();
+        house.delete_room("living_room");
+    }
+
+    #[test]
     fn test_new_device() {
         let mut house = SmartHouse::new();
         house.insert_device("socket2", "bedroom")
+    }
+
+    #[test]
+    fn test_delete_device() {
+        let mut house = SmartHouse::new();
+        house.delete_device("socket2", "bedroom")
     }
 
     #[test]
