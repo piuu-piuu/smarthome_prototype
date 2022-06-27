@@ -127,6 +127,12 @@ mod tests {
     }
 
     #[test]
+    fn test_new_device() {
+        let mut house = SmartHouse::new();
+        house.insert_device("socket2", "bedroom")
+    }
+
+    #[test]
     fn test_devices_again() {
         let house = SmartHouse::new();
         house.devices_at_room("kitchen");
