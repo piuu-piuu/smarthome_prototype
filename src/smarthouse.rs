@@ -27,21 +27,16 @@ impl<'a> SmartHouse<'a> {
         }
     }
 
-    #[allow(unused_variables)]
-    pub fn new_room(&mut self, room_name: &'a str) {
-        let device_holder = HashSet::from_iter(vec![].into_iter());
-        if !(&self.rooms.contains_key(room_name)) {
-            match self.rooms.insert(room_name, device_holder) {
-                Some(device_holder) => println!("The room is added!"),
-                None => {}
-            }
-        } else {
-            println!("The room exists!")
-        }
+    #[warn(unused_variables)]
+    pub fn insert_room(&mut self, room_name: &'a str) {
+        let device_list: HashSet<&str> = HashSet::from_iter(vec![].into_iter());
+        self.rooms.insert(room_name, device_list);
     }
 
-    pub fn add_device(&'a mut self, room_name: &'a str, device_name: &'a str) {
-        todo!()
+    pub fn insert_device(&mut self, new_device: &'a str, room_name: &'a str) {
+        let mut device_list: HashSet<&str> = self.rooms.get(room_name).unwrap().clone();
+        device_list.insert(new_device);
+        self.rooms.insert(room_name, device_list);
     }
 
     pub fn get_rooms(&self) -> impl Iterator<Item = &&str> {
@@ -59,7 +54,7 @@ impl<'a> SmartHouse<'a> {
         }
         println!();
 
-        impl Default for SmartHouse<'_> {
+        impl<'a> Default for SmartHouse<'a> {
             fn default() -> Self {
                 Self::new()
             }
@@ -128,7 +123,7 @@ mod tests {
     #[test]
     fn test_new_room() {
         let mut house = SmartHouse::new();
-        house.new_room("living_room");
+        house.insert_room("living_room");
     }
 
     #[test]
