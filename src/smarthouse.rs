@@ -27,6 +27,12 @@ impl <'a>SmartHouse<'a> {
         }
     }
 
+    #[warn(unused_variables)]
+    pub fn insert_room(&mut self, room_name: &'a str) {
+        let device_list : HashSet<&str> = HashSet::from_iter(vec![].into_iter());
+        self.rooms.insert(room_name, device_list);
+    }
+
     pub fn insert_device(&mut self, new_device: &'a str, room_name: &'a str) {
         let mut device_list : HashSet<&str> = self.rooms.get(room_name).unwrap().clone();
         device_list.insert(new_device);
