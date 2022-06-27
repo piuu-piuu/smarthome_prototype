@@ -4,12 +4,12 @@ use std::collections::{BTreeMap, HashSet};
 
 const EMPTY_ENTRY: &str = "";
 
-pub struct SmartHouse<'a, 'b> {
+pub struct SmartHouse<'a> {
     pub name: &'a str,
-    pub rooms: BTreeMap<&'b str, HashSet<&'b str>>,
+    pub rooms: BTreeMap<&'a str, HashSet<&'a str>>,
 }
 
-impl SmartHouse<'_, '_> {
+impl <'a>SmartHouse<'a> {
     pub fn new() -> Self {
         SmartHouse {
             name: "User House",
@@ -27,6 +27,13 @@ impl SmartHouse<'_, '_> {
         }
     }
 
+    pub fn insert_device(&mut self, new_device: &'a str, room_name: &'a str) {
+        let mut device_list : HashSet<&str> = self.rooms.get(room_name).unwrap().clone();
+        device_list.insert(new_device);
+        self.rooms.insert(room_name, device_list);
+    }
+
+
     pub fn get_rooms(&self) -> impl Iterator<Item = &&str> {
         // Размер возвращаемого массива можно выбрать самостоятельно
         self.rooms.keys()
@@ -42,7 +49,7 @@ impl SmartHouse<'_, '_> {
         }
         println!();
 
-        impl Default for SmartHouse<'_, '_> {
+        impl <'a> Default for SmartHouse<'a> {
             fn default() -> Self {
                 Self::new()
             }
