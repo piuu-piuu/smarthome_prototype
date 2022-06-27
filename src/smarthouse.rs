@@ -30,13 +30,24 @@ impl<'a> SmartHouse<'a> {
     #[warn(unused_variables)]
     pub fn insert_room(&mut self, room_name: &'a str) {
         let device_list: HashSet<&str> = HashSet::from_iter(vec![].into_iter());
-        self.rooms.insert(room_name, device_list);
+        if !self.rooms.contains_key(room_name) {
+            self.rooms.insert(room_name, device_list);
+        }
     }
 
     pub fn insert_device(&mut self, new_device: &'a str, room_name: &'a str) {
-        let mut device_list: HashSet<&str> = self.rooms.get(room_name).unwrap().clone();
-        device_list.insert(new_device);
-        self.rooms.insert(room_name, device_list);
+        let device_list_option: Option<&HashSet<&str>> = self.rooms.get(room_name);
+        let mut device_list: HashSet<&str>;
+        match device_list_option {
+            Some(device_list_option) => {
+                device_list = device_list_option.clone();
+                device_list.insert(new_device);
+                self.rooms.insert(room_name, device_list);
+            }
+            None => {
+                println!("No devices' placeholder")
+            }
+        }
     }
 
     pub fn get_rooms(&self) -> impl Iterator<Item = &&str> {
