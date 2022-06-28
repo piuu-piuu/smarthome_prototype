@@ -6,4 +6,5 @@
 pub mod devices;
 pub mod errors;
 pub mod info;
+pub mod remote;
 pub mod smarthouse;
