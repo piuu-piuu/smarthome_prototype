@@ -3,7 +3,8 @@ use smarthome_4::remote::*;
 
 #[allow(unused)]
 fn main() {
-    reach(SMARTSOCKET, "Test");
-    reach(SMARTSOCKET, "On");
-    reach(SMARTSOCKET, "Off");
+    reach(SMARTSOCKET, "info");
+    reach(SMARTSOCKET, "on");
+    reach(SMARTSOCKET, "off");
+    reach(SMARTSOCKET, "hello world");
 }

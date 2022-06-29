@@ -5,7 +5,7 @@ use smarthome_4::devices::*;
 fn main() {
     let socket1 = SmartSocket {
         name: "socket1",
-        info: "SmartSocket",
+        info: "Smart Socket 220V 50VA",
     };
     socket1.tcpconnect(SMARTSOCKET);
 }

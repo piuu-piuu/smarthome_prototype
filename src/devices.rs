@@ -2,7 +2,7 @@
 //
 // Приложение, имитирующее работу умной розетки, управляемой по TCP.
 
-pub const SMARTSOCKET: &'static str = "127.0.0.1:7878";
+pub const SMARTSOCKET: &str = "127.0.0.1:7878";
 
 use std::io::prelude::*;
 use std::net::TcpListener;
@@ -32,33 +32,45 @@ impl TcpConnect for SmartSocket<'_> {
             // println!("HTTP/1.1 200 OK\r\n\r\n");
             println!("Connection established!");
             println!("{}", &self.info);
-            handle_connection(stream);
+            handle_connection(stream, self.info);
         }
     }
 }
 
-fn handle_connection(mut stream: TcpStream) {
-    let mut buffer = [0; 1024];
-    stream.read(&mut buffer).unwrap();
-    let received = from_utf8(&buffer).unwrap();
-    println!("Request: {}", received);
+fn handle_connection(mut stream: TcpStream, device_info: &str) {
+    loop {
+        let mut buffer = [0; 1024];
 
-    match received {
-        "Test" => {
-            let response = "Socket ready".as_bytes();
-            stream.write(response).unwrap();
-            // stream.flush().unwrap();
+        let read_len = stream.read(&mut buffer).unwrap();
+        if read_len == 0 {
+            println!("Client {} disconnected", stream.peer_addr().unwrap());
+            break;
         }
-        "On" => {
-            let response = "Socket is ON";
-            stream.write(response.as_bytes()).unwrap();
-            stream.flush().unwrap();
+
+        let received = from_utf8(buffer.get(0..read_len).unwrap()).unwrap();
+        println!("Request: {}", received);
+
+        match received {
+            "info" => {
+                let response = device_info.as_bytes();
+                stream.write_all(response).unwrap();
+                stream.flush().unwrap();
+            }
+            "on" => {
+                let response = "Socket  ON";
+                stream.write_all(response.as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
+            "off" => {
+                let response = "Socket  OFF";
+                stream.write_all(response.as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
+            _ => {
+                let response = "Unknown cmd";
+                stream.write_all(response.as_bytes()).unwrap();
+                stream.flush().unwrap();
+            }
         }
-        "Off_" => {
-            let response = "Socket is OFF";
-            stream.write(response.as_bytes()).unwrap();
-            stream.flush().unwrap();
-        }
-        _ => {}
     }
 }
