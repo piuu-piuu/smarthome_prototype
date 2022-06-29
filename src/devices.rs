@@ -29,8 +29,9 @@ impl TcpConnect for SmartSocket<'_> {
 
         for stream in listener.incoming() {
             let stream = stream.unwrap();
-
+            // println!("HTTP/1.1 200 OK\r\n\r\n");
             println!("Connection established!");
+            println!("{}", &self.info);
             handle_connection(stream);
         }
     }
@@ -53,7 +54,7 @@ fn handle_connection(mut stream: TcpStream) {
             stream.write(response.as_bytes()).unwrap();
             stream.flush().unwrap();
         }
-        "Off" => {
+        "Off_" => {
             let response = "Socket is OFF";
             stream.write(response.as_bytes()).unwrap();
             stream.flush().unwrap();
