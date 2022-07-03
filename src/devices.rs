@@ -5,6 +5,7 @@
 pub const SMARTSOCKET: &str = "127.0.0.1:7878";
 
 use std::io::prelude::*;
+use std::net;
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::str::from_utf8;
@@ -20,6 +21,11 @@ pub struct SmartThermometer<'a> {
 
 pub trait TcpConnect {
     fn tcpconnect(&self, host: &str);
+}
+
+pub trait DeviceData {
+    fn udp_data(&self, socket: &net::UdpSocket, receiver: &str, msg: &Vec<u8>);
+    fn init_host(host: &str) -> net::UdpSocket;
 }
 
 #[allow(unused_variables)]
@@ -72,5 +78,26 @@ fn handle_connection(mut stream: TcpStream, device_info: &str) {
                 stream.flush().unwrap();
             }
         }
+    }
+}
+
+impl DeviceData for SmartThermometer<'_> {
+    fn udp_data(&self, socket: &net::UdpSocket, receiver: &str, msg: &Vec<u8>) {
+        println!("sending data: {:?}", msg);
+        let result: usize = 0;
+        match socket.send_to(&msg, receiver) {
+            Ok(number_of_bytes) => println!("{:?}", number_of_bytes),
+            Err(fail) => println!("failed sending {:?}", fail),
+        }
+    }
+
+    fn init_host(host: &str) -> net::UdpSocket {
+        println!("initializing host: {:?}", host);
+        let socket = net::UdpSocket::bind(host).expect("failed to bind host socket");
+        let duration = std::time::Duration::new(1, 0);
+        let dur = std::option::Option::Some(duration);
+        let _res = socket.set_read_timeout(dur).expect("failed to set timeout");
+
+        socket
     }
 }

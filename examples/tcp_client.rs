@@ -3,8 +3,8 @@ use smarthome_4::remote::*;
 
 #[allow(unused)]
 fn main() {
-    reach(SMARTSOCKET, "info");
-    reach(SMARTSOCKET, "on");
-    reach(SMARTSOCKET, "off");
-    reach(SMARTSOCKET, "hello world");
+    reach_tcp(SMARTSOCKET, "info");
+    reach_tcp(SMARTSOCKET, "on");
+    reach_tcp(SMARTSOCKET, "off");
+    reach_tcp(SMARTSOCKET, "hello world");
 }

@@ -6,7 +6,7 @@ use std::io::{Read, Write};
 use std::net::TcpStream;
 use std::str::from_utf8;
 
-pub fn reach(device_host: &str, message: &str) -> std::io::Result<()> {
+pub fn reach_tcp(device_host: &str, message: &str) -> std::io::Result<()> {
     let mut stream = TcpStream::connect(device_host)?;
 
     let msg = message.as_bytes();
@@ -20,5 +20,9 @@ pub fn reach(device_host: &str, message: &str) -> std::io::Result<()> {
     println!(">>> {} ", received);
 
     println!("<<<");
+    Ok(())
+}
+
+pub fn read_udp(device_host: &str, message: &str) -> std::io::Result<()> {
     Ok(())
 }
