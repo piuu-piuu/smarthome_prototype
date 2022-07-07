@@ -1,3 +1,4 @@
+use smarthome_4::devices::{DeviceDataUDP, SmartThermometer};
 use std::net::UdpSocket;
 use std::thread;
 

@@ -8,7 +8,9 @@ use std::io::prelude::*;
 use std::net;
 use std::net::TcpListener;
 use std::net::TcpStream;
+use std::net::UdpSocket;
 use std::str::from_utf8;
+use std::thread;
 
 pub struct SmartSocket<'a> {
     pub name: &'a str,
@@ -23,9 +25,17 @@ pub trait TcpConnect {
     fn tcpconnect(&self, host: &str);
 }
 
-pub trait DeviceData {
-    fn udp_data(&self, socket: &net::UdpSocket, receiver: &str, msg: &Vec<u8>);
-    fn init_host(host: &str) -> net::UdpSocket;
+pub trait DeviceDataUDP {
+    fn udp_send(&self, addr: &str);
+}
+
+impl SmartThermometer<'_> {
+    pub fn new() -> Self {
+        Self {
+            name: "therm",
+            info: "smart therm",
+        }
+    }
 }
 
 #[allow(unused_variables)]
@@ -81,23 +91,28 @@ fn handle_connection(mut stream: TcpStream, device_info: &str) {
     }
 }
 
-impl DeviceData for SmartThermometer<'_> {
-    fn udp_data(&self, socket: &net::UdpSocket, receiver: &str, msg: &Vec<u8>) {
-        println!("sending data: {:?}", msg);
-        let result: usize = 0;
-        match socket.send_to(&msg, receiver) {
-            Ok(number_of_bytes) => println!("{:?}", number_of_bytes),
-            Err(fail) => println!("failed sending {:?}", fail),
+impl DeviceDataUDP for SmartThermometer<'_> {
+    fn udp_send(&self, addr: &str) {
+        let socket = UdpSocket::bind("0.0.0.0:8888").expect("Could not bind socket");
+
+        loop {
+            let mut buf = [0u8; 1500];
+            let sock = socket.try_clone().expect("Failed to clone socket");
+            // println!("socket cloned");
+            match socket.recv_from(&mut buf) {
+                Ok((_, src)) => {
+                    thread::spawn(move || {
+                        println!("Handling connection from {}", src);
+                        let input = String::from("20`C \n");
+                        sock.send_to(input.as_bytes(), src)
+                            .expect("Failed to write to server");
+                        // sock.send_to(&buf, &src).expect("Failed to send a response");
+                    });
+                }
+                Err(e) => {
+                    eprintln!("couldn't recieve a datagram: {}", e);
+                }
+            }
         }
-    }
-
-    fn init_host(host: &str) -> net::UdpSocket {
-        println!("initializing host: {:?}", host);
-        let socket = net::UdpSocket::bind(host).expect("failed to bind host socket");
-        let duration = std::time::Duration::new(1, 0);
-        let dur = std::option::Option::Some(duration);
-        let _res = socket.set_read_timeout(dur).expect("failed to set timeout");
-
-        socket
     }
 }
