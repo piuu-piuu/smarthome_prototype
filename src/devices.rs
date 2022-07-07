@@ -5,7 +5,6 @@
 pub const SMARTSOCKET: &str = "127.0.0.1:7878";
 
 use std::io::prelude::*;
-use std::net;
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::net::UdpSocket;
@@ -29,6 +28,7 @@ pub trait DeviceDataUDP {
     fn udp_send(&self, addr: &str);
 }
 
+#[allow(clippy::new_without_default)]
 impl SmartThermometer<'_> {
     pub fn new() -> Self {
         Self {
@@ -93,7 +93,7 @@ fn handle_connection(mut stream: TcpStream, device_info: &str) {
 
 impl DeviceDataUDP for SmartThermometer<'_> {
     fn udp_send(&self, addr: &str) {
-        let socket = UdpSocket::bind("0.0.0.0:8888").expect("Could not bind socket");
+        let socket = UdpSocket::bind(addr).expect("Could not bind socket");
 
         loop {
             let mut buf = [0u8; 1500];

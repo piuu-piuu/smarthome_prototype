@@ -6,7 +6,7 @@ use std::io::{Read, Write};
 use std::net::{TcpStream, UdpSocket};
 use std::str::from_utf8;
 
-pub fn reach_tcp(device_host: &str, message: &str) -> std::io::Result<()> {
+pub fn reach_tcp(device_host: &str, message: &str) -> std::io::Result<String> {
     let mut stream = TcpStream::connect(device_host)?;
 
     let msg = message.as_bytes();
@@ -20,17 +20,15 @@ pub fn reach_tcp(device_host: &str, message: &str) -> std::io::Result<()> {
     println!(">>> {} ", received);
 
     println!("<<<");
-    Ok(())
+    Ok(received.to_string())
 }
 
-pub fn read_udp(addr: &str, command: &str) {
+pub fn read_udp<'a>(addr: &'a str, command: &'a str) -> String {
     let socket = UdpSocket::bind(addr).expect("Could not bind client socket");
     socket
         .connect("127.0.0.1:8888")
         .expect("Could not connect to server");
-    // loop {
-    let mut input = String::new();
-    input = String::from(command);
+    let input = String::from(command);
     let mut buffer = [0u8; 1500];
 
     socket
@@ -44,4 +42,6 @@ pub fn read_udp(addr: &str, command: &str) {
         "{}",
         std::str::from_utf8(&buffer).expect("Could not write buffer as string")
     );
+    let res: Vec<&str> = std::str::from_utf8(&buffer).unwrap().split(' ').collect();
+    res[0].to_string()
 }
