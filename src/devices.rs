@@ -102,15 +102,15 @@ impl DeviceDataUDP for SmartThermometer<'_> {
             match socket.recv_from(&mut buf) {
                 Ok((_, src)) => {
                     thread::spawn(move || {
-                        println!("Handling connection from {}", src);
+                        println!("Client {} connected", src);
                         let input = String::from("20`C \n");
                         sock.send_to(input.as_bytes(), src)
-                            .expect("Failed to write to server");
+                            .expect("Failed to send data");
                         // sock.send_to(&buf, &src).expect("Failed to send a response");
                     });
                 }
                 Err(e) => {
-                    eprintln!("couldn't recieve a datagram: {}", e);
+                    eprintln!("{}", e);
                 }
             }
         }

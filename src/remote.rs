@@ -3,7 +3,7 @@
 // запрашивать информацию о текущем состоянии и потребляемой мощности розетки.
 
 use std::io::{Read, Write};
-use std::net::TcpStream;
+use std::net::{TcpStream, UdpSocket};
 use std::str::from_utf8;
 
 pub fn reach_tcp(device_host: &str, message: &str) -> std::io::Result<()> {
@@ -23,6 +23,25 @@ pub fn reach_tcp(device_host: &str, message: &str) -> std::io::Result<()> {
     Ok(())
 }
 
-pub fn read_udp(device_host: &str, message: &str) -> std::io::Result<()> {
-    Ok(())
+pub fn read_udp(addr: &str, command: &str) {
+    let socket = UdpSocket::bind(addr).expect("Could not bind client socket");
+    socket
+        .connect("127.0.0.1:8888")
+        .expect("Could not connect to server");
+    // loop {
+    let mut input = String::new();
+    input = String::from(command);
+    let mut buffer = [0u8; 1500];
+
+    socket
+        .send(input.as_bytes())
+        .expect("Failed to write to server");
+
+    socket
+        .recv_from(&mut buffer)
+        .expect("Could not read into buffer");
+    print!(
+        "{}",
+        std::str::from_utf8(&buffer).expect("Could not write buffer as string")
+    );
 }
