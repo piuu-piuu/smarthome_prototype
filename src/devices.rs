@@ -31,7 +31,7 @@ pub trait UdpServer {
 }
 
 pub trait AsyncUdpServer {
-    fn a_udp_send(&self, addr: &str);
+    fn a_udp_send(&self, addr: &str, device_data: &str);
 }
 
 #[allow(clippy::new_without_default)]
@@ -124,7 +124,7 @@ impl UdpServer for SmartThermometer<'_> {
 }
 
 impl AsyncUdpServer for SmartThermometer<'_> {
-    fn a_udp_send(&self, addr: &str) {
-        audp_serve();
+    fn a_udp_send(&self, addr: &str, device_data: &str) {
+        audp_serve(addr, device_data).expect("No answer from device");
     }
 }

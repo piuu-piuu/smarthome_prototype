@@ -47,13 +47,13 @@ struct Server {
 }
 
 impl Server {
-    async fn run(self) -> Result<(), io::Error> {
+    async fn run(self, dev_info: &str) -> Result<(), io::Error> {
         let Server {
             socket,
             mut buf,
             mut to_send,
         } = self;
-        let input = String::from("20`C \n");
+        let input = String::from(dev_info);
         loop {
             // are there incoming connection?
             if let Some((_size, peer)) = to_send {
@@ -66,10 +66,10 @@ impl Server {
 }
 
 #[tokio::main]
-pub async fn audp_serve() -> Result<(), Box<dyn Error>> {
-    let addr = "127.0.0.1:8888".to_string();
+pub async fn audp_serve(addr: &str, dev_info: &str) -> Result<(), Box<dyn Error>> {
+    // let addr = "127.0.0.1:8888".to_string();
 
-    let socket = UdpSocket::bind(&addr).await?;
+    let socket = UdpSocket::bind(addr).await?;
     println!("Listening on: {}", socket.local_addr()?);
 
     let server = Server {
@@ -79,7 +79,7 @@ pub async fn audp_serve() -> Result<(), Box<dyn Error>> {
     };
 
     // This starts the server task.
-    server.run().await?;
+    server.run(dev_info).await?;
 
     Ok(())
 }
