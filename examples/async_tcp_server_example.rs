@@ -1,5 +1,9 @@
-use smarthome_4::tokio_servers::*;
+use smarthome_4::{devices::SmartSocket, tokio_servers::*};
 
 fn main() {
-    atcp_serve().expect("Server failure.");
+    let socket1 = SmartSocket {
+        name: "socket1",
+        info: "Smart Socket 220V 50VA",
+    };
+    atcp_serve(socket1.info).expect("Server failure.");
 }

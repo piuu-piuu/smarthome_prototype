@@ -30,7 +30,7 @@ pub async fn audp_client() -> Result<(), Box<dyn Error>> {
     socket.connect(&remote_addr).await?;
     // command has no actual meaning here, as device is multicasting
     let command = "read".as_bytes();
-    socket.send(&command).await?;
+    socket.send(command).await?;
 
     const MAX_DATAGRAM_SIZE: usize = 65_507;
     let mut data = vec![0u8; MAX_DATAGRAM_SIZE];

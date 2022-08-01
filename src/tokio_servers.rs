@@ -1,12 +1,13 @@
 use std::error::Error;
 use std::io;
 use std::net::SocketAddr;
+use std::str::from_utf8;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 use tokio::net::UdpSocket;
 
 #[tokio::main]
-pub async fn atcp_serve() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn atcp_serve(device_info: &str) -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind("127.0.0.1:7878").await?;
 
     loop {
@@ -28,9 +29,40 @@ pub async fn atcp_serve() -> Result<(), Box<dyn std::error::Error>> {
                 };
 
                 // Write the data back
-                if let Err(e) = socket.write_all(&buf[0..n]).await {
-                    eprintln!("failed to write to socket; err = {:?}", e);
-                    return;
+                // if let Err(e) = socket.write_all(&buf[0..n]).await {
+                //     eprintln!("failed to write to socket; err = {:?}", e);
+                //     return;
+                // }
+
+                let received = from_utf8(buf.get(0..n).unwrap()).unwrap();
+                println!("Request: {}", received);
+
+                match received {
+                    "info" => {
+                        let response = device_info.as_bytes();
+                        socket.write_all(response).await.expect("Command failed");
+                    }
+                    "on" => {
+                        let response = "Socket  ON";
+                        socket
+                            .write_all(response.as_bytes())
+                            .await
+                            .expect("Command failed");
+                    }
+                    "off" => {
+                        let response = "Socket  OFF";
+                        socket
+                            .write_all(response.as_bytes())
+                            .await
+                            .expect("Command failed");
+                    }
+                    _ => {
+                        let response = "Unknown cmd";
+                        socket
+                            .write_all(response.as_bytes())
+                            .await
+                            .expect("Connection error");
+                    }
                 }
             }
         }
