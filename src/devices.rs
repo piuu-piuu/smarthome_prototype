@@ -11,6 +11,8 @@ use std::net::UdpSocket;
 use std::str::from_utf8;
 use std::thread;
 
+use crate::tokio_servers::audp_serve;
+
 pub struct SmartSocket<'a> {
     pub name: &'a str,
     pub info: &'a str,
@@ -20,12 +22,16 @@ pub struct SmartThermometer<'a> {
     pub info: &'a str,
 }
 
-pub trait TcpConnect {
+pub trait TcpServer {
     fn tcpconnect(&self, host: &str);
 }
 
-pub trait DeviceDataUDP {
+pub trait UdpServer {
     fn udp_send(&self, addr: &str);
+}
+
+pub trait AsyncUdpServer {
+    fn a_udp_send(&self, addr: &str);
 }
 
 #[allow(clippy::new_without_default)]
@@ -39,7 +45,7 @@ impl SmartThermometer<'_> {
 }
 
 #[allow(unused_variables)]
-impl TcpConnect for SmartSocket<'_> {
+impl TcpServer for SmartSocket<'_> {
     fn tcpconnect(&self, host: &str) {
         let listener = TcpListener::bind(host).unwrap();
 
@@ -48,12 +54,12 @@ impl TcpConnect for SmartSocket<'_> {
             // println!("HTTP/1.1 200 OK\r\n\r\n");
             println!("Connection established!");
             println!("{}", &self.info);
-            handle_connection(stream, self.info);
+            handle_tcp_connection(stream, self.info);
         }
     }
 }
 
-fn handle_connection(mut stream: TcpStream, device_info: &str) {
+fn handle_tcp_connection(mut stream: TcpStream, device_info: &str) {
     loop {
         let mut buffer = [0; 1024];
 
@@ -91,7 +97,7 @@ fn handle_connection(mut stream: TcpStream, device_info: &str) {
     }
 }
 
-impl DeviceDataUDP for SmartThermometer<'_> {
+impl UdpServer for SmartThermometer<'_> {
     fn udp_send(&self, addr: &str) {
         let socket = UdpSocket::bind(addr).expect("Could not bind socket");
 
@@ -114,5 +120,11 @@ impl DeviceDataUDP for SmartThermometer<'_> {
                 }
             }
         }
+    }
+}
+
+impl AsyncUdpServer for SmartThermometer<'_> {
+    fn a_udp_send(&self, addr: &str) {
+        audp_serve();
     }
 }

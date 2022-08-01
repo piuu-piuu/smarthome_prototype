@@ -1,4 +1,4 @@
-use smarthome_4::devices::{DeviceDataUDP, SmartThermometer};
+use smarthome_4::devices::{SmartThermometer, UdpServer};
 // use smarthome_4::info::*;
 // use smarthome_4::smarthouse::*;
 
