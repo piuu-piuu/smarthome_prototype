@@ -7,3 +7,9 @@ pub enum SmartHouseError {
     #[error("No device found")]
     NoDeviceFound,
 }
+
+#[derive(Error, Debug)]
+pub enum NetworkError {
+    #[error("TCP connection error")]
+    TcpConnectionError,
+}

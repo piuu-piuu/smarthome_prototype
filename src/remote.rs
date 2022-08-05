@@ -6,21 +6,27 @@ use std::io::Write;
 use std::net::{TcpStream, UdpSocket};
 use std::str::from_utf8;
 
-pub fn reach_tcp(device_host: &str, message: &str) -> std::io::Result<String> {
-    let mut stream = TcpStream::connect(device_host)?;
+use crate::errors::NetworkError;
 
+pub fn reach_tcp(device_host: &str, message: &str) -> Result<String, NetworkError> {
     let msg = message.as_bytes();
-    stream.write_all(msg)?;
+    let mut stream =
+        TcpStream::connect(device_host).map_err(|err| NetworkError::TcpConnectionError);
+
+    stream.unwrap().write_all(msg).unwrap();
     println!("Sent message '{}', awaiting reply...", message);
 
     let buffer = [0_u8; 1024];
-    let received = from_utf8(&buffer)
-        .map_err(|err| ("TCP error {}", err))
-        .unwrap();
-
-    println!(">>> {} ", received);
-    println!("<<<");
-    Ok(received.to_string())
+    let received = from_utf8(&buffer);
+    let received = match received {
+        Ok(content) => {
+            println!(">>> {} ", content);
+            println!("<<<");
+            Ok(content.to_string())
+        }
+        Err(_) => Err(NetworkError::TcpConnectionError),
+    };
+    return received;
 }
 
 pub fn read_udp<'a>(addr: &'a str, command: &'a str) -> String {
