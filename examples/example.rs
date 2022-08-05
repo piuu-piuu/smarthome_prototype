@@ -17,7 +17,8 @@ fn main() {
     };
 
     let thermo = SmartThermometer {
-        name: "thermo1",
+        // name error
+        name: "hermo1",
         info: "SmartThermometer",
     };
 

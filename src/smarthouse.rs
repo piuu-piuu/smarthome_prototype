@@ -113,10 +113,10 @@ impl<'a> SmartHouse<'a> {
                 match provider.info(room, device) {
                     Ok(output) => report.push_str(&output),
                     Err(SmartHouseError::NoDeviceFound) => {
-                        println!("no device found for pair {}, {}", room, device)
+                        println!("{}, {}: {}", room, device, SmartHouseError::NoDeviceFound)
                     }
                     Err(SmartHouseError::NoDeviceName) => {
-                        println!("no device name given!")
+                        println!("{}", SmartHouseError::NoDeviceName)
                     }
                 }
             }

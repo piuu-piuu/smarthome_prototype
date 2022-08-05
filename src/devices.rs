@@ -104,7 +104,6 @@ impl UdpServer for SmartThermometer<'_> {
         loop {
             let mut buf = [0u8; 1500];
             let sock = socket.try_clone().expect("Failed to clone socket");
-            // println!("socket cloned");
             match socket.recv_from(&mut buf) {
                 Ok((_, src)) => {
                     thread::spawn(move || {
@@ -112,7 +111,6 @@ impl UdpServer for SmartThermometer<'_> {
                         let input = String::from("20`C \n");
                         sock.send_to(input.as_bytes(), src)
                             .expect("Failed to send data");
-                        // sock.send_to(&buf, &src).expect("Failed to send a response");
                     });
                 }
                 Err(e) => {
