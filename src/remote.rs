@@ -2,7 +2,7 @@
 // включать и выключать розетку,
 // запрашивать информацию о текущем состоянии и потребляемой мощности розетки.
 
-use std::io::{Read, Write};
+use std::io::Write;
 use std::net::{TcpStream, UdpSocket};
 use std::str::from_utf8;
 
@@ -13,12 +13,12 @@ pub fn reach_tcp(device_host: &str, message: &str) -> std::io::Result<String> {
     stream.write_all(msg)?;
     println!("Sent message '{}', awaiting reply...", message);
 
-    let mut buffer = [0_u8; 1024];
-    let read_len = stream.read(&mut buffer)?;
-    let received = from_utf8(buffer.get(0..read_len).unwrap()).unwrap();
+    let buffer = [0_u8; 1024];
+    let received = from_utf8(&buffer)
+        .map_err(|err| ("TCP error {}", err))
+        .unwrap();
 
     println!(">>> {} ", received);
-
     println!("<<<");
     Ok(received.to_string())
 }

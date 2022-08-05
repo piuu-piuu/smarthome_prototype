@@ -1,6 +1,5 @@
 // Пользовательские устройства
 //
-// Приложение, имитирующее работу умной розетки, управляемой по TCP.
 
 pub const SMARTSOCKET: &str = "127.0.0.1:7878";
 
@@ -51,7 +50,6 @@ impl TcpServer for SmartSocket<'_> {
 
         for stream in listener.incoming() {
             let stream = stream.unwrap();
-            // println!("HTTP/1.1 200 OK\r\n\r\n");
             println!("Connection established!");
             println!("{}", &self.info);
             handle_tcp_connection(stream, self.info);

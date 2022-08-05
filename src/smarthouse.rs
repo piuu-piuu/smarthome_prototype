@@ -51,7 +51,7 @@ impl<'a> SmartHouse<'a> {
                 self.rooms.insert(room_name, device_list);
             }
             None => {
-                println!("No devices' placeholder")
+                println!("No devices' placeholder for insertion")
             }
         }
     }
@@ -67,7 +67,7 @@ impl<'a> SmartHouse<'a> {
                 }
             }
             None => {
-                println!("No devices' placeholder")
+                println!("No devices' placeholder for deletion")
             }
         }
     }
@@ -113,7 +113,7 @@ impl<'a> SmartHouse<'a> {
                 match provider.info(room, device) {
                     Ok(output) => report.push_str(&output),
                     Err(SmartHouseError::NoDeviceFound) => {
-                        println!("{}, {}: {}", room, device, SmartHouseError::NoDeviceFound)
+                        println!("{}: {} - {}", room, device, SmartHouseError::NoDeviceFound)
                     }
                     Err(SmartHouseError::NoDeviceName) => {
                         println!("{}", SmartHouseError::NoDeviceName)
