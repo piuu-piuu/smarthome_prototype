@@ -10,10 +10,18 @@ use crate::errors::NetworkError;
 
 pub fn reach_tcp(device_host: &str, message: &str) -> Result<String, NetworkError> {
     let msg = message.as_bytes();
-    let mut stream =
-        TcpStream::connect(device_host).map_err(|err| NetworkError::TcpConnectionError);
-
-    stream.unwrap().write_all(msg).unwrap();
+    let stream = TcpStream::connect(device_host);
+    match stream {
+        Ok(_) => {
+            println!("TCP connection established.")
+        }
+        Err(_e) => return Err(NetworkError::TcpConnectionError),
+    }
+    let rx_message = stream.unwrap().write_all(msg);
+    match rx_message {
+        Ok(_) => {}
+        Err(_e) => return Err(NetworkError::TcpWriteError),
+    }
     println!("Sent message '{}', awaiting reply...", message);
 
     let buffer = [0_u8; 1024];

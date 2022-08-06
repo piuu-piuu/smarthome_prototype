@@ -47,7 +47,6 @@ impl DeviceInfoProvider for BorrowingDeviceInfoProvider<'_, '_> {
                 output = format!("{}: {} {}. ", room_name, device_name, self.thermo.info);
                 Ok(output)
             } else {
-                // output = format!("Error {} at {}. ", device_name, room_name);
                 Err(SmartHouseError::NoDeviceFound)
             }
         } else {

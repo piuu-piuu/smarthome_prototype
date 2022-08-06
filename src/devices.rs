@@ -10,6 +10,7 @@ use std::net::UdpSocket;
 use std::str::from_utf8;
 use std::thread;
 
+use crate::errors::NetworkError;
 use crate::tokio_servers::audp_serve;
 
 pub struct SmartSocket<'a> {
@@ -46,13 +47,22 @@ impl SmartThermometer<'_> {
 #[allow(unused_variables)]
 impl TcpServer for SmartSocket<'_> {
     fn tcpconnect(&self, host: &str) {
-        let listener = TcpListener::bind(host).unwrap();
-
-        for stream in listener.incoming() {
-            let stream = stream.unwrap();
-            println!("Connection established!");
-            println!("{}", &self.info);
-            handle_tcp_connection(stream, self.info);
+        let listener = TcpListener::bind(host);
+        match listener {
+            Ok(listen) => {
+                for stream in listen.incoming() {
+                    let stream = stream.unwrap();
+                    println!("Connection established!");
+                    println!("{}", &self.info);
+                    handle_tcp_connection(stream, self.info);
+                }
+            }
+            Err(_e) => {
+                println!(
+                    "{} - Server does not respond.",
+                    NetworkError::TcpConnectionError
+                )
+            }
         }
     }
 }
@@ -61,13 +71,23 @@ fn handle_tcp_connection(mut stream: TcpStream, device_info: &str) {
     loop {
         let mut buffer = [0; 1024];
 
-        let read_len = stream.read(&mut buffer).unwrap();
-        if read_len == 0 {
-            println!("Client {} disconnected", stream.peer_addr().unwrap());
-            break;
+        let read_len = stream.read(&mut buffer);
+
+        match read_len {
+            Ok(length) => {
+                if length == 0 {
+                    println!("Client {} disconnected", stream.peer_addr().unwrap());
+                    break;
+                } else {
+                }
+            }
+            Err(_e) => {
+                println!("{}", NetworkError::TcpReadError);
+                break;
+            }
         }
 
-        let received = from_utf8(buffer.get(0..read_len).unwrap()).unwrap();
+        let received = from_utf8(buffer.get(0..read_len.unwrap()).unwrap()).unwrap();
         println!("Request: {}", received);
 
         match received {
