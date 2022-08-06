@@ -34,7 +34,7 @@ pub fn reach_tcp(device_host: &str, message: &str) -> Result<String, NetworkErro
         }
         Err(_) => Err(NetworkError::TcpConnectionError),
     };
-    return received;
+    received
 }
 
 pub fn read_udp<'a>(addr: &'a str, command: &'a str) -> String {
@@ -49,9 +49,13 @@ pub fn read_udp<'a>(addr: &'a str, command: &'a str) -> String {
         .send(input.as_bytes())
         .expect("Failed to write to server");
 
-    socket
-        .recv_from(&mut buffer)
-        .expect("Could not read into buffer");
+    match socket.recv_from(&mut buffer) {
+        Ok(_) => {}
+        Err(_e) => {
+            println!("{}", NetworkError::UdpReadError)
+        }
+    }
+
     print!(
         "{}",
         std::str::from_utf8(&buffer).expect("Could not write buffer as string")
