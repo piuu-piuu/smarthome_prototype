@@ -73,7 +73,6 @@ impl<'a> SmartHouse<'a> {
     }
 
     pub fn get_rooms(&self) -> impl Iterator<Item = &&str> {
-        // Размер возвращаемого массива можно выбрать самостоятельно
         self.rooms.keys()
     }
 
