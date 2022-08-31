@@ -1,7 +1,7 @@
 use smarthome_4::devices::{SmartSocket, SmartThermometer, TcpServer, UdpServer, SMARTSOCKET};
 use smarthome_4::info::{BorrowingDeviceInfoProvider, OwningDeviceInfoProvider};
+use smarthome_4::models::SmartHouse;
 use smarthome_4::remote::{reach_tcp, read_udp};
-use smarthome_4::smarthouse::SmartHouse;
 use std::thread;
 
 #[test]

@@ -1,13 +1,14 @@
 use super::errors::SmartHouseError;
 use super::info::DeviceInfoProvider;
+use super::models::*;
 use std::collections::{BTreeMap, HashSet};
 
 const EMPTY_ENTRY: &str = "";
 
-pub struct SmartHouse<'a> {
-    pub name: &'a str,
-    pub rooms: BTreeMap<&'a str, HashSet<&'a str>>,
-}
+// pub struct SmartHouse<'a> {
+//     pub name: &'a str,
+//     pub rooms: BTreeMap<&'a str, HashSet<&'a str>>,
+// }
 
 impl<'a> SmartHouse<'a> {
     pub fn new() -> Self {
