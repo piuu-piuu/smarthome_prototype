@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
-use smarthome_4::devices;
 use smarthome_4::devices::{SmartSocket, SmartThermometer};
 use smarthome_4::models::{self, SmartHouse};
+use smarthome_4::paths::*;
 
 use actix_web::{
     web::{self, Data},
@@ -58,11 +58,14 @@ async fn main() -> std::io::Result<()> {
     coll.insert_one(house, None).await;
 
     HttpServer::new(move || {
-        App::new().app_data(Data::new(client.database("house_1")))
-        // .service(web::resource("/users").route(web::post().to(webc::save_new)))
+        App::new()
+            .app_data(Data::new(client.database("house_1")))
+            .service(
+                web::resource("/insert_room/{new_room}").route(web::post().to(paths::insert_room)),
+            )
         // .service(web::resource("/users/{username}").route(web::get().to(webc::find)))
     })
-    // .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }
