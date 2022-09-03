@@ -38,9 +38,10 @@ impl SmartHouse {
     #[warn(unused_variables)]
     pub fn insert_room(&mut self, room_name: String) {
         let device_list: HashSet<String> = HashSet::from_iter(vec![].into_iter());
-        if !self.rooms.contains_key(&room_name) {
-            self.rooms.insert(room_name, device_list);
-        }
+        // if !self.rooms.contains_key(&room_name) {
+        //     self.rooms.insert(room_name, device_list);
+        // }
+        self.rooms.entry(room_name).or_insert(device_list);
     }
 
     pub fn delete_room(&mut self, room_name: String) {
@@ -135,11 +136,11 @@ impl SmartHouse {
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[test]
-    fn test_rooms() {
-        let house = SmartHouse::new();
-        // house.get_rooms().next();
-    }
+    // #[test]
+    // fn test_rooms() {
+    //     let house = SmartHouse::new();
+    //     house.get_rooms().next();
+    // }
     #[test]
     fn test_device_list() {
         let house = SmartHouse::new();

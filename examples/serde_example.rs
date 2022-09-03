@@ -1,13 +1,6 @@
-use serde::{Deserialize, Serialize};
-use smarthome_4::devices::{SmartSocket, SmartThermometer};
-use smarthome_4::models::{self, SmartHouse};
-// use smarthome_4::paths::*;
+use smarthome_4::models::SmartHouse;
 
-use actix_web::{
-    web::{self, Data},
-    App, HttpServer,
-};
-use mongodb::{Client, Database};
+use mongodb::Database;
 
 pub async fn save_db(house: SmartHouse, mongo: &Database) -> Result<(), String> {
     mongo
@@ -18,23 +11,7 @@ pub async fn save_db(house: SmartHouse, mongo: &Database) -> Result<(), String> 
     Ok(())
 }
 
-fn build_house() -> SmartHouse {
-    let socket1 = SmartSocket {
-        name: "socket1",
-        info: "SmartSocket",
-    };
-
-    let socket2 = SmartSocket {
-        name: "socket2",
-        info: "SmartSocket",
-    };
-
-    let thermo = SmartThermometer {
-        // name error
-        name: "hermo1",
-        info: "SmartThermometer",
-    };
-
+fn main() {
     // Инициализация дома
     let house = SmartHouse::new();
 
@@ -43,8 +20,4 @@ fn build_house() -> SmartHouse {
 
     let deserialized: SmartHouse = serde_json::from_str(&serialized).unwrap();
     println!("deserialized = {:?}", deserialized);
-
-    house
 }
-
-fn main() {}
