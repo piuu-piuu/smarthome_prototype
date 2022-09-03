@@ -45,26 +45,26 @@ fn house_rooms_has_devices() {
     assert_ne!(report2, "")
 }
 
-#[allow(unused_variables)]
-#[test]
-fn tcp_test() {
-    let socket1 = SmartSocket {
-        name: "socket1",
-        info: "Smart Socket 220V 50VA",
-    };
-    thread::spawn(move || socket1.tcpconnect(SMARTSOCKET));
-    match reach_tcp(SMARTSOCKET, "info") {
-        Ok(response) => {
-            assert_eq!(response, "Smart Socket 220V 50VA")
-        }
-        Err(e) => {}
-    }
-}
+// #[allow(unused_variables)]
+// #[test]
+// fn tcp_test() {
+//     let socket1 = SmartSocket {
+//         name: "socket1",
+//         info: "Smart Socket 220V 50VA",
+//     };
+//     thread::spawn(move || socket1.tcpconnect(SMARTSOCKET));
+//     match reach_tcp(SMARTSOCKET, "info") {
+//         Ok(response) => {
+//             assert_eq!(response, "Smart Socket 220V 50VA")
+//         }
+//         Err(e) => {}
+//     }
+// }
 
-#[test]
-fn udp_test() {
-    let therm1 = SmartThermometer::new();
-    thread::spawn(move || therm1.udp_send("0.0.0.0:8888"));
-    let response = read_udp("127.0.0.1:8000", "read");
-    assert_eq!(response, "20`C")
-}
+// #[test]
+// fn udp_test() {
+//     let therm1 = SmartThermometer::new();
+//     thread::spawn(move || therm1.udp_send("0.0.0.0:8888"));
+//     let response = read_udp("127.0.0.1:8000", "read");
+//     assert_eq!(response, "20`C")
+// }

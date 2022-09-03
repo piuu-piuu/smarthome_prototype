@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use smarthome_4::devices::{SmartSocket, SmartThermometer};
 use smarthome_4::models::{self, SmartHouse};
-use smarthome_4::paths::*;
+// use smarthome_4::paths::*;
 
 use actix_web::{
     web::{self, Data},
@@ -9,7 +9,7 @@ use actix_web::{
 };
 use mongodb::{Client, Database};
 
-pub async fn save_db(house: SmartHouse<'_>, mongo: &Database) -> Result<(), String> {
+pub async fn save_db(house: SmartHouse, mongo: &Database) -> Result<(), String> {
     mongo
         .collection::<SmartHouse>("main_house")
         .insert_one(&house, None)
@@ -18,7 +18,7 @@ pub async fn save_db(house: SmartHouse<'_>, mongo: &Database) -> Result<(), Stri
     Ok(())
 }
 
-fn build_house() -> SmartHouse<'static> {
+fn build_house() -> SmartHouse {
     let socket1 = SmartSocket {
         name: "socket1",
         info: "SmartSocket",
@@ -47,25 +47,4 @@ fn build_house() -> SmartHouse<'static> {
     house
 }
 
-#[actix_web::main]
-async fn main() -> std::io::Result<()> {
-    let client = Client::with_uri_str("mongodb://localhost:27017")
-        .await
-        .expect("failed to connect");
-
-    let coll = client.database("house_1").collection::<SmartHouse>("SH");
-    let house = build_house();
-    coll.insert_one(house, None).await;
-
-    HttpServer::new(move || {
-        App::new()
-            .app_data(Data::new(client.database("house_1")))
-            .service(
-                web::resource("/insert_room/{new_room}").route(web::post().to(paths::insert_room)),
-            )
-        // .service(web::resource("/users/{username}").route(web::get().to(webc::find)))
-    })
-    .bind(("127.0.0.1", 8080))?
-    .run()
-    .await
-}
+fn main() {}
