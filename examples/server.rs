@@ -23,9 +23,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::clone(&house))
             .app_data(Data::clone(&database))
-            .service(web::resource("/add_room").route(web::post().to(paths::add_room)))
+            .service(web::resource("/add_room/{new_room}").route(web::post().to(paths::add_room)))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", 8888))?
     .run()
     .await;
 
