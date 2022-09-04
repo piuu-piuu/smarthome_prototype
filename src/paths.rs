@@ -41,12 +41,65 @@ pub async fn add_room(
     HttpResponse::Ok().json(result)
 }
 
+pub async fn del_room(
+    house: web::Data<Mutex<SmartHouse>>,
+    room: web::Path<String>,
+) -> HttpResponse {
+    let mut da_haus = house.lock().unwrap();
+    da_haus.delete_room(room.into_inner());
+    // getting result
+    let result = da_haus.clone();
+    HttpResponse::Ok().json(result)
+}
+
+pub async fn add_device(
+    house: web::Data<Mutex<SmartHouse>>,
+    device: web::Path<String>,
+    room: web::Path<String>,
+) -> HttpResponse {
+    let mut da_haus = house.lock().unwrap();
+    da_haus.insert_device(device.into_inner(), room.into_inner());
+    // getting result
+    let result = da_haus.clone();
+    HttpResponse::Ok().json(result)
+}
+
+pub async fn del_device(
+    house: web::Data<Mutex<SmartHouse>>,
+    device: web::Path<String>,
+    room: web::Path<String>,
+) -> HttpResponse {
+    let mut da_haus = house.lock().unwrap();
+    da_haus.delete_device(device.into_inner(), room.into_inner());
+    // getting result
+    let result = da_haus.clone();
+    HttpResponse::Ok().json(result)
+}
+
+pub async fn all_devices(house: web::Data<Mutex<SmartHouse>>) -> HttpResponse {
+    let mut da_haus = house.lock().unwrap();
+    let result = da_haus.clone();
+    HttpResponse::Ok().json(result)
+}
+
+pub async fn devices_at_room(
+    house: web::Data<Mutex<SmartHouse>>,
+    room: web::Path<String>,
+) -> HttpResponse {
+    let mut da_haus = house.lock().unwrap();
+    let result = da_haus.devices_at_room(&room.into_inner());
+    // getting result
+    // let result = da_haus.clone();
+    HttpResponse::Ok().json(result)
+}
+
+#[allow(unused_variables)]
 pub async fn get_data(
     house: web::Data<Mutex<SmartHouse>>,
     room: web::Path<String>,
     device: web::Path<String>,
 ) -> HttpResponse {
-    // let mut da_haus = house.lock().unwrap();
+    let mut da_haus = house.lock().unwrap();
     // getting result
     let mut result = "None".to_string();
     match device.into_inner().as_str() {

@@ -24,6 +24,12 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::clone(&house))
             .app_data(Data::clone(&database))
             .service(web::resource("/add_room/{new_room}").route(web::post().to(paths::add_room)))
+            .service(web::resource("/del_room/{room}").route(web::post().to(paths::add_room)))
+            .service(web::resource("/add/{device}/{room}").route(web::get().to(paths::add_device)))
+            .service(web::resource("/del/{device}/{room}]").route(web::get().to(paths::del_device)))
+            .service(web::resource("/all_devices").route(web::get().to(paths::all_devices)))
+            .service(web::resource("/at/{room}").route(web::get().to(paths::devices_at_room)))
+            .service(web::resource("/data/{room}/{device}").route(web::get().to(paths::get_data)))
             .service(web::resource("/commit").route(web::post().to(paths::db_commit)))
     })
     .bind(("127.0.0.1", 8888))?
