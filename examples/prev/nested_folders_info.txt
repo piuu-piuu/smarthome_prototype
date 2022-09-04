@@ -1,0 +1,2 @@
+Rust-analyser stops parsing Cargo.toml when more than four [[example]] sections are used within Cargo.toml.
+Those sections are necessary for examples to run from nested folder.

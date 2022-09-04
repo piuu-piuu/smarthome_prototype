@@ -35,18 +35,18 @@ path = "examples/prev/async_tcp_server_example.rs"
 name = "async_udp_server"
 path = "examples/prev/async_udp_server_example.rs"
 
-[[example]]
-name = "tcp_client"
-path = "examples/prev/tcp_client.rs"
+#[[example]]
+#name = "tcp_client"
+#path = "examples/prev/tcp_client.rs"
 
-[[example]]
-name = "udp_client"
-path = "examples/prev/udp_client.rs"
+#[[example]]
+#name = "udp_client"
+#path = "examples/prev/udp_client.rs"
 
-[[example]]
-name = "tcp_server"
-path = "examples/prev/tcp_server.rs"
+#[[example]]
+#name = "tcp_server"
+#path = "examples/prev/tcp_server.rs"
 
-[[example]]
-name = "async_udp_server"
-path = "examples/prev/udp_server.rs"
+#[[example]]
+#name = "async_udp_server"
+#path = "examples/prev/udp_server.rs"
