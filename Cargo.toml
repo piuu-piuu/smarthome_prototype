@@ -3,8 +3,6 @@ name = "smarthome_4"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 tokio = { version = "1.20.1", features = ["full"] }
 thiserror = "1.0"
@@ -18,3 +16,37 @@ actix-web = "4"
 # diesel = { version = "2.0.0-rc.0", features = ["postgres"] }
 # dotenvy = "0.15"
 # libsqlite3-sys = { version = "*", features = [ "bundled" ] }
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[example]]
+name = "async_tcp_client"
+path = "examples/prev/async_tcp_client_example.rs"
+
+[[example]]
+name = "async_udp_client"
+path = "examples/prev/async_udp_client_example.rs"
+
+[[example]]
+name = "async_tcp_server"
+path = "examples/prev/async_tcp_server_example.rs"
+
+[[example]]
+name = "async_udp_server"
+path = "examples/prev/async_udp_server_example.rs"
+
+[[example]]
+name = "tcp_client"
+path = "examples/prev/tcp_client.rs"
+
+[[example]]
+name = "udp_client"
+path = "examples/prev/udp_client.rs"
+
+[[example]]
+name = "tcp_server"
+path = "examples/prev/tcp_server.rs"
+
+[[example]]
+name = "async_udp_server"
+path = "examples/prev/udp_server.rs"

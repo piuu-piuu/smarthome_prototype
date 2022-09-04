@@ -1,3 +1,5 @@
+use mongodb::Database;
+
 use super::errors::SmartHouseError;
 use super::info::DeviceInfoProvider;
 use super::models::*;

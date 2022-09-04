@@ -17,13 +17,14 @@ async fn main() -> std::io::Result<()> {
         .expect("failed to connect");
 
     let house = Data::new(Mutex::new(SmartHouse::new()));
-    let database = Data::new(client.database("house_2"));
+    let database = Data::new(client.database("house"));
 
     let res = HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&house))
             .app_data(Data::clone(&database))
             .service(web::resource("/add_room/{new_room}").route(web::post().to(paths::add_room)))
+            .service(web::resource("/commit").route(web::post().to(paths::db_commit)))
     })
     .bind(("127.0.0.1", 8888))?
     .run()
