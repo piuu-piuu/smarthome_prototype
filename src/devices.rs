@@ -22,6 +22,19 @@ pub struct SmartThermometer<'a> {
     pub info: &'a str,
 }
 
+impl<'a> SmartSocket<'a> {
+    pub fn new(device_name: &'a str) -> Self {
+        Self {
+            name: device_name,
+            info: "smart socket",
+        }
+    }
+
+    pub fn get_data() -> String {
+        String::from("Smart Socket 220V 50VA")
+    }
+}
+
 pub trait TcpServer {
     fn tcpconnect(&self, host: &str);
 }
@@ -35,12 +48,16 @@ pub trait AsyncUdpServer {
 }
 
 #[allow(clippy::new_without_default)]
-impl SmartThermometer<'_> {
-    pub fn new() -> Self {
+impl<'a> SmartThermometer<'a> {
+    pub fn new(device_name: &'a str) -> Self {
         Self {
-            name: "therm",
+            name: device_name,
             info: "smart therm",
         }
+    }
+
+    pub fn get_data() -> String {
+        String::from("Smart thermometer 20'C")
     }
 }
 

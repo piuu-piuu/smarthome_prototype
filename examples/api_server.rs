@@ -30,7 +30,6 @@ async fn main() -> std::io::Result<()> {
     .run()
     .await;
 
-    // write to db here?
     println!("Yep");
     res
 }
