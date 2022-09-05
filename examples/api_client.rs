@@ -1,7 +1,8 @@
 use reqwest::Error;
 use serde::Deserialize;
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashSet};
 
+#[allow(dead_code)]
 #[derive(Deserialize, Debug)]
 struct SmartHouseResponce {
     name: String,

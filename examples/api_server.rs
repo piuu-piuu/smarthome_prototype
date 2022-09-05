@@ -1,19 +1,13 @@
 use mongodb::Client;
-use smarthome_4::{
-    devices::{SmartSocket, SmartThermometer},
-    info::{BorrowingDeviceInfoProvider, OwningDeviceInfoProvider},
-    models::SmartHouse,
-};
+use smarthome_4::models::SmartHouse;
 use std::sync::Mutex;
 
-// use super::models::SmartHouse;
 use actix_web::{
     middleware::Logger,
     web::{self, Data},
     App, HttpServer,
 };
 use smarthome_4::paths;
-// use mongodb::Client;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
