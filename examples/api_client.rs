@@ -15,7 +15,7 @@ async fn main() -> Result<(), Error> {
         "add_room/new-kitchen",
         "del_room/new-kitchen",
         "add/socket2/bathroom",
-        "del/socket2/bathroom",
+        "del/socket3/bathroom",
         "commit",
         "list_all_devices",
     ]);
