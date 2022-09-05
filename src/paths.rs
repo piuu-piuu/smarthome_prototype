@@ -14,7 +14,7 @@ use crate::{
 
 #[allow(unused_variables)]
 pub async fn db_commit(house: web::Data<Mutex<SmartHouse>>, db: Data<Database>) -> HttpResponse {
-    let da_haus = house.lock().unwrap().clone();
+    let da_haus = house.lock().unwrap();
 
     db.collection::<SmartHouse>("house")
         .delete_many(
@@ -25,12 +25,15 @@ pub async fn db_commit(house: web::Data<Mutex<SmartHouse>>, db: Data<Database>) 
         )
         .await
         .expect("DB drop error.");
+    let commit_house = da_haus.clone();
     db.collection::<SmartHouse>("house")
-        .insert_one(da_haus, None)
+        .insert_one(commit_house, None)
         .await
         .map_err(|err| format!("DB_ERROR: {}", err))
         .expect("Commit error.");
-    HttpResponse::Ok().json("Commited.")
+    // HttpResponse::Ok().json("Commited.")
+    let result = da_haus.clone();
+    HttpResponse::Ok().json(result)
 }
 
 pub async fn add_room(

@@ -34,10 +34,10 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/del_room/{room}").route(web::get().to(paths::del_room)))
             .service(web::resource("/add/{device}/{room}").route(web::get().to(paths::add_device)))
             .service(web::resource("/del/{device}/{room}").route(web::get().to(paths::add_device)))
-            .service(web::resource("/all_devices").route(web::get().to(paths::all_devices)))
+            .service(web::resource("/list_all_devices").route(web::get().to(paths::all_devices)))
             .service(web::resource("/at/{room}").route(web::get().to(paths::devices_at_room)))
             .service(web::resource("/commit").route(web::get().to(paths::db_commit)))
-            .service(web::resource("/commit").route(web::get().to(paths::house_report)))
+            .service(web::resource("/house_report").route(web::get().to(paths::house_report)))
     })
     .bind(("127.0.0.1", 8888))?
     .run()
