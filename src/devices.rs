@@ -161,3 +161,8 @@ impl AsyncUdpServer for SmartThermometer<'_> {
         audp_serve(addr, device_data).expect("No answer from device");
     }
 }
+
+#[test]
+fn test_mock_output() {
+    println!("{}", SmartSocket::get_data())
+}

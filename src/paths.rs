@@ -7,7 +7,10 @@ use std::sync::Mutex;
 
 #[allow(unused_imports)]
 use crate::devices::{SmartSocket, SmartThermometer};
-use crate::models::SmartHouse;
+use crate::{
+    info::{BorrowingDeviceInfoProvider, OwningDeviceInfoProvider},
+    models::SmartHouse,
+};
 
 #[allow(unused_variables)]
 pub async fn db_commit(house: web::Data<Mutex<SmartHouse>>, db: Data<Database>) -> HttpResponse {
@@ -54,11 +57,11 @@ pub async fn del_room(
 
 pub async fn add_device(
     house: web::Data<Mutex<SmartHouse>>,
-    device: web::Path<String>,
-    room: web::Path<String>,
+    path: web::Path<(String, String)>,
 ) -> HttpResponse {
     let mut da_haus = house.lock().unwrap();
-    da_haus.insert_device(device.into_inner(), room.into_inner());
+    let (device, room) = path.into_inner();
+    da_haus.insert_device(device, room);
     // getting result
     let result = da_haus.clone();
     HttpResponse::Ok().json(result)
@@ -66,11 +69,11 @@ pub async fn add_device(
 
 pub async fn del_device(
     house: web::Data<Mutex<SmartHouse>>,
-    device: web::Path<String>,
-    room: web::Path<String>,
+    path: web::Path<(String, String)>,
 ) -> HttpResponse {
     let mut da_haus = house.lock().unwrap();
-    da_haus.delete_device(device.into_inner(), room.into_inner());
+    let (device, room) = path.into_inner();
+    da_haus.delete_device(device, room);
     // getting result
     let result = da_haus.clone();
     HttpResponse::Ok().json(result)
@@ -93,19 +96,28 @@ pub async fn devices_at_room(
     HttpResponse::Ok().json(result)
 }
 
-#[allow(unused_variables)]
-pub async fn get_data(
-    house: web::Data<Mutex<SmartHouse>>,
-    room: web::Path<String>,
-    device: web::Path<String>,
-) -> HttpResponse {
-    let da_haus = house.lock().unwrap();
-    // getting result
-    let mut result = "None".to_string();
-    match device.into_inner().as_str() {
-        "socket" => result = SmartSocket::get_data(),
-        "thermometer" => result = SmartThermometer::get_data(),
-        _ => (),
-    }
-    HttpResponse::Ok().json(result)
+pub async fn house_report(house: web::Data<Mutex<SmartHouse>>) -> HttpResponse {
+    let house = house.lock().unwrap();
+    let socket1 = SmartSocket {
+        name: "socket1",
+        info: "Smart Socket 220V 50VA",
+    };
+    let socket2 = SmartSocket {
+        name: "socket2",
+        info: "Smart Socket 220V 50VA",
+    };
+    let thermo1 = SmartThermometer {
+        name: "thermo1",
+        info: "SmartThermometer 20'C",
+    };
+    let info_provider_1 = OwningDeviceInfoProvider { socket: socket1 };
+    let info_provider_2 = BorrowingDeviceInfoProvider {
+        socket: &socket2,
+        thermo: &thermo1,
+    };
+    let report1 = house.create_report(&info_provider_1);
+    let report2 = house.create_report(&info_provider_2);
+
+    // HttpResponse::Ok().json(format!("{}; {}", report1, report2))
+    HttpResponse::Ok().json(report2)
 }

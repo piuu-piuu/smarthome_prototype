@@ -25,6 +25,7 @@ impl DeviceInfoProvider for OwningDeviceInfoProvider<'_> {
         if !device_name.is_empty() {
             if device_name == self.socket.name {
                 output = format!("{}: {} {}. ", room_name, device_name, self.socket.info);
+                // println!("{}", output);
                 Ok(output)
             } else {
                 Err(SmartHouseError::NoDeviceFound)

@@ -123,7 +123,7 @@ impl SmartHouse {
                 match provider.info(room, device) {
                     Ok(output) => report.push_str(&output),
                     Err(SmartHouseError::NoDeviceFound) => {
-                        println!("{}: {} - {}", room, device, SmartHouseError::NoDeviceFound)
+                        // println!("{}: {} - {}", room, device, SmartHouseError::NoDeviceFound)
                     }
                     Err(SmartHouseError::NoDeviceName) => {
                         println!("{}", SmartHouseError::NoDeviceName)
@@ -178,13 +178,17 @@ mod tests {
     #[test]
     fn test_new_device() {
         let mut house = SmartHouse::new();
-        house.insert_device("socket2".to_string(), "bedroom".to_string())
+        println!("{:?}", house);
+        house.insert_device("socket2".to_string(), "bedroom".to_string());
+        println!("{:?}", house)
     }
 
     #[test]
     fn test_delete_device() {
         let mut house = SmartHouse::new();
-        house.delete_device("socket2".to_string(), "bedroom".to_string())
+        println!("{:?}", house);
+        house.delete_device("socket1".to_string(), "bathroom".to_string());
+        println!("{:?}", house)
     }
 
     #[test]

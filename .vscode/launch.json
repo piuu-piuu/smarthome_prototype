@@ -10,7 +10,10 @@
             "name": "Debug",
             "program": "${workspaceFolder}/<your program>",
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "RUST_LOG": "info",
+            }
         }
     ]
 }
